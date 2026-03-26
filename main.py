@@ -13,24 +13,34 @@ texts = [
     'мило, правда?'
 ]
 
-current_index = 0  # храним текущий индекс на сервере
+current_index = 0
+
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
+
 @app.route('/get_text')
 def get_text():
     global current_index
+
+    # Если уже дошли до конца, возвращаем пустой ответ
+    if current_index >= len(texts):
+        return jsonify({'finished': True})
+
     # Берём текущий текст
     text = texts[current_index]
+
     # Увеличиваем индекс для следующего раза
     current_index += 1
-    # Если дошли до конца, начинаем сначала
-    if current_index >= len(texts):
-        current_index = 0
-    return jsonify({'text': text})
+
+    # Проверяем, закончились ли тексты
+    finished = (current_index >= len(texts))
+
+    return jsonify({'text': text, 'finished': finished})
+
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 8080))
+    port = int(os.environ.get("PORT", 8000))
     app.run(host='0.0.0.0', port=port)

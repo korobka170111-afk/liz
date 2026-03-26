@@ -8,22 +8,34 @@
 </head>
 <body>
     <div class="container">
-        <h1 id="main-text">Нажми на кнопку!</h1>
+        <h1 id="main-text">Представь...</h1>
         <button id="change-btn">Сменить текст</button>
     </div>
 
     <script>
-        let currentIndex = 0;
-
         const textElement = document.getElementById('main-text');
         const button = document.getElementById('change-btn');
 
         button.addEventListener('click', () => {
-            fetch(`/get_text?index=${currentIndex + 1}`)
+            fetch('/get_text')
                 .then(response => response.json())
                 .then(data => {
-                    textElement.textContent = data.text;
-                    currentIndex = data.next_index;
+                    if (data.finished) {
+                        // Тексты закончились — удаляем кнопку и показываем картинку
+                        button.style.display = 'none';
+
+                        // Создаём элемент с картинкой
+                        const img = document.createElement('img');
+                        img.src = '/static/img_1.png';
+                        img.alt = 'финальная картинка';
+                        img.style.maxWidth = '100%';
+                        img.style.marginTop = '20px';
+
+                        document.querySelector('.container').appendChild(img);
+                    } else {
+                        // Показываем следующий текст
+                        textElement.textContent = data.text;
+                    }
                 })
                 .catch(error => console.error('Ошибка:', error));
         });
