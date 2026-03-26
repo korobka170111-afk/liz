@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Меняющийся текст</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1 id="main-text">Привет, это первый текст!</h1>
+        <button id="change-btn">Сменить текст</button>
+    </div>
+
+    <script>
+        let currentIndex = 0;
+
+        const textElement = document.getElementById('main-text');
+        const button = document.getElementById('change-btn');
+
+        button.addEventListener('click', () => {
+            fetch(`/get_text?index=${currentIndex + 1}`)
+                .then(response => response.json())
+                .then(data => {
+                    textElement.textContent = data.text;
+                    currentIndex = data.next_index;
+                })
+                .catch(error => console.error('Ошибка:', error));
+        });
+    </script>
+</body>
+</html>
